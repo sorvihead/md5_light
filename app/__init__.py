@@ -1,6 +1,7 @@
 from config import Config
 
 from flask import Flask
+from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
@@ -9,6 +10,7 @@ from redis import Redis
 import rq
 
 db = SQLAlchemy()
+mail = Mail()
 migrate = Migrate()
 
 
@@ -19,6 +21,7 @@ def create_app(config_class=Config):
     app.task_queue = rq.Queue('tc-tasks', connection=app.redis)
 
     db.init_app(app)
+    mail.init_app(app)
     migrate.init_app(app, db)
 
     from app.secure_api import bp as secure

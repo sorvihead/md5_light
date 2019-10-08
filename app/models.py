@@ -10,7 +10,16 @@ class Task(db.Model):
     id = db.Column(db.String(36), primary_key=True)
     url = db.Column(db.String(128), index=True)
     email = db.Column(db.String(128))
+    md5 = db.Column(db.String(128))
     complete = db.Column(db.Boolean, default=False)
+
+    @staticmethod
+    def launch_task(name, url, email=None):
+        rq_job = current_app.task_queue.enqueue('app.tasks.' + name, url, email)
+        task = Task(id=rq_job.get_id(), url=url, email=email)
+        db.session.add(task)
+
+        return task
 
     def get_rq_job(self):
         try:
@@ -21,4 +30,4 @@ class Task(db.Model):
 
     def get_status(self):
         job = self.get_rq_job()
-        return job.meta.get('progress', 0) if job else 100
+        return job.meta.get('status', 0) if job else 'not exist'
