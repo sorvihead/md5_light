@@ -88,11 +88,14 @@ source venv/bin/activate
 export FLASK_APP=application.py
 ```
 * Запускаем http сервер командой flask run, и в другом окне терминала(с включенным виртуальным окружением) redis-queue командой rq worker tc-tasks
+* Запускаем команду
+```bash
+flask db upgrade
+```
+* Убираем из файла .env параметр DATABASE_URI (чтобы использовалась SQLITE3)
 
 При локальном запуске api доступно на порту 5000, при  запуске из Docker
 на порту 8000
-
-При локальном запуске нужно убрать строчку DATABASE_URI  в файле .env
 
 Также, для корректной отправки электронной почты необходимо будет отредактировать файл .env
 поля MAIL_USERNAME, MAIL_PASSWORD
