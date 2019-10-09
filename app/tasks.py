@@ -1,3 +1,5 @@
+import time
+
 from app import create_app
 from app import db
 
@@ -36,12 +38,23 @@ def _set_task_results(md5):
         db.session.commit()
 
 
+def _hash_bytestr_iter(bytesiter, hasher):
+    for block in bytesiter:
+        hasher.update(block)
+    return hasher.hexdigest()
+
+
+def _response_as_blockiter(response, blocksize=4096):
+    for block in response.iter_content(chunk_size=blocksize):
+        yield block
+
+
 def md5_file(url, email=None):
     try:
         _set_task_status('running')
         data = []
         r = requests.get(url)
-        md5 = hashlib.md5(r.content).hexdigest()
+        md5 = _hash_bytestr_iter(_response_as_blockiter(r, 4096), hashlib.md5())
         data.append({'url': url, 'md5': md5})
         _set_task_results(md5)
         _set_task_status('complete')
@@ -53,5 +66,6 @@ def md5_file(url, email=None):
                        attachments=[('results.json', 'application/json',
                                      json.dumps(data, indent=4))],
                        sync=True)
-    except:
+    except Exception as err:
         _set_task_status('fail')
+        print(err.with_traceback())

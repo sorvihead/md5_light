@@ -27,4 +27,14 @@ def create_app(config_class=Config):
     from app.secure_api import bp as secure
     app.register_blueprint(secure)
 
+    from app.errors import bp as errors_bp
+    app.register_blueprint(errors_bp)
+
+    from app.errors.errors import (not_found_error, internal_server_error, method_not_allowed,
+                                   bad_request)
+    app.register_error_handler(404, not_found_error)
+    app.register_error_handler(400, bad_request)
+    app.register_error_handler(500, internal_server_error)
+    app.register_error_handler(405, method_not_allowed)
+
     return app
