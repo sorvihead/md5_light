@@ -35,14 +35,14 @@ curl -X GET \
 Проект поддерживает сборку в Docker
 Сначала нужно установить зависимости (redis, mysql)
 ```bash
-$ docker run --name redis \
+sudo docker run --name redis \
  -d -p 6379:6379 \
  redis:3-alpine
 ```
 
 ```bash
-docker run --name mysql -d -e MYSQL_RANDOM_ROOT_PASSWORD=yes \
-    -e MYSQL_DATABASE=microblog -e MYSQL_USER=microblog \
+sudo docker run --name mysql -d -e MYSQL_RANDOM_ROOT_PASSWORD=yes \
+    -e MYSQL_DATABASE=tc -e MYSQL_USER=tc \
     -e MYSQL_PASSWORD=<DATABASE-PASSWORD> \
     mysql/mysql-server:5.7
 ```
